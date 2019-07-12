@@ -1,7 +1,7 @@
 import openpyxl as op
 from openpyxl.styles import Font
 
-fileName = "Cole & Associates - 8 x 8 x 24 Cuplock_MATERIAL LIST.xlsx"
+fileName = "MATERIAL LIST.xlsx"
 print(fileName)
 
 # Scaffold Materials Listing
@@ -99,7 +99,7 @@ for item in range(12, sheet_last_row()):
     materialDescription = Sheet1.cell(row=item, column=4).value
     materialQuantity = Sheet1.cell(row=item, column=10).value
     materialWeight = Sheet1.cell(row=item, column=13).value
-    materialWeight = float(materialWeight.rstrip(" lbs"))
+    materialWeight = float(materialWeight.rstrip(" lbs")).number_format = '0.00'
     Sheet2.cell(row=x, column=1, value=item - 11)
     Sheet2.cell(row=x, column=2, value=materialDescription)
     Sheet2.cell(row=x, column=3, value=materialQuantity)
@@ -110,21 +110,28 @@ for item in range(12, sheet_last_row()):
         rentalUnitPrice = Sheet2.cell(row=x, column=8, value=materialListing[materialDescription][2])
 
 # Insert Formulae into cells - Multiplication of Quantity and Unit Price
-for j in range(2, x + 1):
-    totalSalePrice = Sheet2.cell(row=j, column=5,
-                                 value=Sheet2.cell(row=j, column=3).value * Sheet2.cell(row=j, column=4).value)
-    totalUsedPrice = Sheet2.cell(row=j, column=7,
-                                 value=Sheet2.cell(row=j, column=3).value * Sheet2.cell(row=j, column=6).value)
-    totalRentalPrice = Sheet2.cell(row=j, column=9,
-                                   value=Sheet2.cell(row=j, column=3).value * Sheet2.cell(row=j, column=8).value)
+print(x)
+for j in range(2, (x + 1)):
+    salePriceFormula = "=" + "C" + str(j) + "*" + "D" + str(j)
+    usedPriceFormula = "=" + "C" + str(j) + "*" + "F" + str(j)
+    rentalPriceFormula = "=" + "C" + str(j) + "*" + "H" + str(j)
 
-# Total quantities of each column
+    Sheet2.cell(row=j, column=5, value=str(salePriceFormula))
+    Sheet2.cell(row=j, column=7, value=str(usedPriceFormula))
+    Sheet2.cell(row=j, column=9, value=str(rentalPriceFormula))
+
 # Determine final row to write the sums
-m = x + 2
-Sheet2.cell(row=m, column=5, value="=SUM(E2:E" + str(x + 1))
-# Sheet2.cell(row=m, column=7, value="=SUM(G2:G45)")
-# Sheet2.cell(row=m, column=9, value="=SUM(I2:I45)")
-# Sheet2.cell(row=m, column=10, value="=SUM(J2:J45)")
+finalRowForSum = x + 3
+
+# Total quantities of each column & format each output as well
+Sheet2.cell(row=finalRowForSum, column=5,
+            value=str("=SUM(" + "E2" + ":" + "E" + str(x + 1) + ")")).number_format = '"$"#,##0_);("$"#,##0)'
+Sheet2.cell(row=finalRowForSum, column=7,
+            value=str("=SUM(" + "G2" + ":" + "G" + str(x + 1) + ")")).number_format = '"$"#,##0_);("$"#,##0)'
+Sheet2.cell(row=finalRowForSum, column=9,
+            value=str("=SUM(" + "I2" + ":" + "I" + str(x + 1) + ")")).number_format = '"$"#,##0_);("$"#,##0)'
+Sheet2.cell(row=finalRowForSum, column=10,
+            value=str("=SUM(" + "J2" + ":" + "J" + str(x + 1) + ")")).number_format = '0.00'
 
 # Save changes to workbook
 wb.save(fileName)
